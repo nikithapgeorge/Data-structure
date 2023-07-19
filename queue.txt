@@ -1,0 +1,86 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+#define MAX_SIZE 100
+
+// Queue structure
+typedef struct {
+    int data[MAX_SIZE];
+    int front;
+    int rear;
+} Queue;
+
+// Initialize the queue
+void initialize(Queue *queue) {
+    queue->front = -1;
+    queue->rear = -1;
+}
+
+// Check if the queue is empty
+bool isEmpty(Queue *queue) {
+    return queue->front == -1 && queue->rear == -1;
+}
+
+// Check if the queue is full
+bool isFull(Queue *queue) {
+    return (queue->rear + 1) % MAX_SIZE == queue->front;
+}
+
+// Enqueue (add) an element to the queue
+void enqueue(Queue *queue, int value) {
+    if (isFull(queue)) {
+        printf("Queue overflow: Cannot enqueue element\n");
+        return;
+    }
+
+    if (isEmpty(queue))
+        queue->front = 0;
+
+    queue->rear = (queue->rear + 1) % MAX_SIZE;
+    queue->data[queue->rear] = value;
+}
+
+// Dequeue (remove) an element from the queue
+int dequeue(Queue *queue) {
+    if (isEmpty(queue)) {
+        printf("Queue underflow: Cannot dequeue element\n");
+        return -1; // You can choose a different value for indicating an error
+    }
+
+    int dequeuedValue = queue->data[queue->front];
+
+    if (queue->front == queue->rear) // Only one element in the queue
+        initialize(queue);
+    else
+        queue->front = (queue->front + 1) % MAX_SIZE;
+
+    return dequeuedValue;
+}
+
+// Get the element at the front of the queue
+int front(Queue *queue) {
+    if (isEmpty(queue)) {
+        printf("Queue is empty\n");
+        return -1; // You can choose a different value for indicating an error
+    }
+
+    return queue->data[queue->front];
+}
+
+int main() {
+    Queue queue;
+    initialize(&queue);
+
+    enqueue(&queue, 10);
+    enqueue(&queue, 20);
+    enqueue(&queue, 30);
+
+    printf("Front element: %d\n", front(&queue));
+
+    printf("Dequeued element: %d\n", dequeue(&queue));
+    printf("Dequeued element: %d\n", dequeue(&queue));
+    printf("Dequeued element: %d\n", dequeue(&queue));
+    printf("Dequeued element: %d\n", dequeue(&queue)); // Trying to dequeue from an empty queue
+
+    return 0;
+}
